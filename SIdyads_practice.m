@@ -11,7 +11,7 @@ function total_accuracy = SIdyads_practice(win, dispSize, threshold, iti_length,
 % Outputs:
 % The practice accuracy acheived
 %
-% Written by Emalie McMahon Oct 7, 2021
+% Written by Emalie McMahon Oct 3, 2022
 
 
 if nargin < 1
@@ -101,12 +101,6 @@ end
 movie = zeros(n_trials, 1);
 still_loading = 1;
 
-%% Set up RTBox
-if RTbox_connected
-    RTBox('ClockRatio', 10);
-    RTBox('clear',20);
-end
-
 %% Experiment loop
 total_accuracy = 0;
 while total_accuracy < threshold
@@ -123,10 +117,8 @@ while total_accuracy < threshold
     end
     
     for itrial = 1:n_trials
-        if RTbox_connected
-            RTBox('clear',20); %Clear button box
-        end
         still_loading = 1;
+        keyPressed = 0; 
         frame_counter = 1;
         trial_start = GetSecs;
         Screen('SetMovieTimeIndex', movie(itrial), 0);
@@ -148,6 +140,7 @@ while total_accuracy < threshold
                 if movie(itrial+1) > 0; still_loading = 0; end
             end
             frame_counter = frame_counter + 1;
+            if ~keyPressed && ~mac; [keyPressed, keyTime, ~] = KbCheck; end %Check if a key has been pressed
         end
         
         %Get end time and close movie
@@ -161,15 +154,14 @@ while total_accuracy < threshold
                 movie(itrial+1) = Screen('OpenMovie', win, T.movie_path{itrial+1}, async, preloadsecs);
                 if movie(itrial+1) > 0; still_loading = 0; end
             end
+            if ~keyPressed && ~mac; [keyPressed, keyTime, ~] = KbCheck; end %Check if a key has been pressed
         end
         
-        if RTbox_connected
-            [~,bps] = RTBox; % Pull RTBox events and log the last button press
-            if ~isempty(bps)
-                T.response(itrial) = 1;
-            end
-        end
-    end
+        if keyPressed
+            T.response_time(itrial) = keyTime - T.onset_time(itrial);
+            T.response(itrial) = 1;
+        end 
+    end 
     
     %Print participant performance
     false_alarms = sum(T.response(T.condition == 1) == 1);

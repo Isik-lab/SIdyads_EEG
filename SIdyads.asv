@@ -25,7 +25,6 @@ if nargin < 1
     send_trig = 0;
     iti_length = 1;
     break_frequency = 0; 
-    mac = 1;
     
     %% open window
     commandwindow;
@@ -154,7 +153,7 @@ for itrial = 1:n_trials
         end
         Screen('Close',tex);
         
-        if ~keyPressed && ~mac; [keyPressed, keyTime, ~] = KbCheck; end %Check if a key has been pressed
+        if ~keyPressed; [keyPressed, keyTime, keyCode] = KbCheck; end %Check if a key has been pressed
     end
     real_trial_end = Screen('Flip', win);
     if send_trig
@@ -176,14 +175,16 @@ for itrial = 1:n_trials
     
     iti_end = T.onset_time(itrial) + stimulus_length + iti_length + T.added_jitter(itrial)*iti_jitter;
     %Wait until the end of the ITI
-    while ((GetSecs-start)<iti_end)
-        if ~keyPressed && ~mac; [keyPressed, keyTime, ~] = KbCheck; end %Check if a key has been pressed
+    while ((GetSecs-start)<iti_end); 
+        if ~keyPressed; [keyPressed, keyTime, keyCode] = KbCheck; end %Check if a key has been pressed
     end
     
+    
     if keyPressed
-        T.response_time(itrial) = keyTime - T.onset_time(itrial);
+        T.response_time(itrial) = bpts(end) - T.onset_time(itrial);
         T.response(itrial) = 1;
-    end 
+        
+    
     
     
     %% Experiment break
