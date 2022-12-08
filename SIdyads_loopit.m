@@ -50,6 +50,10 @@ screen = max(Screen('Screens'));
 Screen('Blendfunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 half_size = round(stimulus_size/2);
 dispSize = [x0-half_size y0-half_size x0+half_size y0+half_size];
+ifi = Screen('GetFlipInterval', window); % Measure the vertical refresh rate of the monitor
+s=sprintf('%g screen flip interval', ifi);
+fprintf('\n%s\n',WrapString(s));
+
 
 priorityLevel=MaxPriority(win);
 Priority(priorityLevel);
@@ -112,7 +116,7 @@ if do_practice
     end 
 else
     %% Task instructions
-    instructions='Watch the actions in each video. \n If there are more than 2 people in the video, hit the button. \n Press any button to begin the experiment.';
+    instructions='Watch the actions in each video. \n If there are more than 2 people in the video, hit the button. \n Stay still during the experiment. \n Press any button to begin the experiment.';
     DrawFormattedText2(instructions,'win',win,'sx','center','sy','center','xalign','center','yalign', 'center','baseColor',[255, 255, 255]);
     Screen('Flip', win);
     

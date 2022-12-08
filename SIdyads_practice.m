@@ -1,4 +1,4 @@
-function total_accuracy = SIdyads_practice(win, dispSize, threshold, iti_length, RTbox_connected)
+function total_accuracy = SIdyads_practice(win, dispSize, threshold, iti_length)
 % Presents the social interactions dyads practice trials
 %
 % Inputs:

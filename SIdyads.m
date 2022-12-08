@@ -30,7 +30,7 @@ if nargin < 1
     %% open window
     commandwindow;
     %     HideCursor;
-    Screen('Preference','SkipSyncTests',1);
+    Screen('Preference', 'SkipSyncTests', 2); %1 for mac %2 for window
 
     % Uncomment for debugging with transparent screen
 %     AssertOpenGL;
@@ -38,9 +38,10 @@ if nargin < 1
 
     screen = max(Screen('Screens'));
     [win, rect] = Screen('OpenWindow', screen, 0);
-    [x0,y0] = RectCenter(rect);
+    [x0, y0] = RectCenter(rect);
     Screen('Blendfunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     dispSize = [x0-500 y0-500 x0+500 y0+500];
+
 
     priorityLevel=MaxPriority(win);
     Priority(priorityLevel);
@@ -72,6 +73,11 @@ n_extra_iti = 25;
 ending_wait_time = 0;
 start_wait_time = iti_length;
 n_frames = 15;
+
+photodiode_square = [95 y0-12 119 y0+12];
+black = BlackIndex(window);
+white = WhiteIndex(window);
+
 
 %% Make stimulus presentation table
 
@@ -123,8 +129,10 @@ movie = zeros(n_trials, 1);
 still_loading = 1; %The first movie is not yet loaded
 
 %% Experiment loop
+
 % experiment start time
 start = GetSecs();
+Screen('FillRect', win, white, squarephoto); % to time it on the photodiode
 Screen('Flip', win);
 
 % wait half a second to start
@@ -146,6 +154,8 @@ for itrial = 1:n_trials
     for idx = 1:n_frames
         tex = Screen('GetMovieImage', win, movie(itrial), blocking);
         Screen('DrawTexture', win, tex, [], dispSize);
+        Screen('FillRect', win, black, squarephoto); % to time it on the photodiode
+
         %%%% BEGIN SACRED TIMING SENSITIVE SECTION%%%%
         [frame_stamps(idx),~,~,~] = Screen('Flip',win); % Odd sequencing, but want 'ScreenFlip' right after DAQ on
         if idx==1 && send_trig
@@ -156,6 +166,7 @@ for itrial = 1:n_trials
         
         if ~keyPressed && ~mac; [keyPressed, keyTime, ~] = KbCheck; end %Check if a key has been pressed
     end
+    Screen('FillRect', win, white, squarephoto); % to time it on the photodiode
     real_trial_end = Screen('Flip', win);
     if send_trig
         io64(ioObj,address,2);  % DAQ On
