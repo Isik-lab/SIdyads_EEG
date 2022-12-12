@@ -75,8 +75,8 @@ start_wait_time = iti_length;
 n_frames = 15;
 
 photodiode_square = [95 y0-12 119 y0+12];
-black = BlackIndex(window);
-white = WhiteIndex(window);
+black = BlackIndex(win);
+white = WhiteIndex(win);
 
 
 %% Make stimulus presentation table
@@ -132,7 +132,7 @@ still_loading = 1; %The first movie is not yet loaded
 
 % experiment start time
 start = GetSecs();
-Screen('FillRect', win, white, squarephoto); % to time it on the photodiode
+Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
 Screen('Flip', win);
 
 % wait half a second to start
@@ -154,7 +154,7 @@ for itrial = 1:n_trials
     for idx = 1:n_frames
         tex = Screen('GetMovieImage', win, movie(itrial), blocking);
         Screen('DrawTexture', win, tex, [], dispSize);
-        Screen('FillRect', win, black, squarephoto); % to time it on the photodiode
+        Screen('FillRect', win, black, photodiode_square); % to time it on the photodiode
 
         %%%% BEGIN SACRED TIMING SENSITIVE SECTION%%%%
         [frame_stamps(idx),~,~,~] = Screen('Flip',win); % Odd sequencing, but want 'ScreenFlip' right after DAQ on
@@ -166,7 +166,7 @@ for itrial = 1:n_trials
         
         if ~keyPressed && ~mac; [keyPressed, keyTime, ~] = KbCheck; end %Check if a key has been pressed
     end
-    Screen('FillRect', win, white, squarephoto); % to time it on the photodiode
+    Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
     real_trial_end = Screen('Flip', win);
     if send_trig
         io64(ioObj,address,2);  % DAQ On

@@ -15,13 +15,14 @@ function total_accuracy = SIdyads_practice(win, dispSize, threshold, iti_length)
 
 
 if nargin < 1
+    mac = 0; 
     threshold = 80;
     iti_length = 0.75;
     
     %% open window
     commandwindow;
     %     HideCursor;
-    Screen('Preference','SkipSyncTests',1);
+%     Screen('Preference','SkipSyncTests',0);
     
     % Uncomment for debugging with transparent screen
     AssertOpenGL;
