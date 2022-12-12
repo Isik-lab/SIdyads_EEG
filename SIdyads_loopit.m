@@ -15,7 +15,7 @@ if nargin < 1
     debug = 1; 
 end
 
-mac = 1; 
+mac = 0; 
 n_repeats = 10; %How many times to loop through the full set of stimuli
 break_frequency = 0; %There are 275 videos to a run. This value determines
 %how frequently to break up those movies. A value of 2 would lead a
@@ -31,9 +31,9 @@ commandwindow;
 HideCursor;
 
 % Sync tests skipped on mac
-if mac
-    Screen('Preference','SkipSyncTests',1);
-end 
+% if mac
+%     Screen('Preference','SkipSyncTests',1);
+% end 
 
 % Debugging with transparent screen
 if debug
@@ -50,9 +50,9 @@ screen = max(Screen('Screens'));
 Screen('Blendfunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 half_size = round(stimulus_size/2);
 dispSize = [x0-half_size y0-half_size x0+half_size y0+half_size];
-ifi = Screen('GetFlipInterval', window); % Measure the vertical refresh rate of the monitor
-s=sprintf('%g screen flip interval', ifi);
-fprintf('\n%s\n',WrapString(s));
+% ifi = Screen('GetFlipInterval', window); % Measure the vertical refresh rate of the monitor
+% s=sprintf('%g screen flip interval', ifi);
+% fprintf('\n%s\n',WrapString(s));
 
 
 priorityLevel=MaxPriority(win);
