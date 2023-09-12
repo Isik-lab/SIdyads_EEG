@@ -73,8 +73,9 @@ iti_length = TR;
 ending_wait_time = 1;
 start_wait_time = TR;
 n_frames = 15;
+half_dim = 250;
 if debug
-    n_trials = 5;
+    n_trials = 25;
 else
     n_trials = height(T);
 end
@@ -95,9 +96,9 @@ T.response = zeros(height(T),1);
 for itrial = 1:height(T)
     video_name = T.video_name{itrial};
     if T.condition(itrial) == 1
-        T.movie_path{itrial} = fullfile(curr, 'videos','dyad_videos_3000ms',video_name);
+        T.movie_path{itrial} = fullfile(curr, 'videos','dyad_videos_500ms',video_name);
     elseif T.condition(itrial) == 0
-        T.movie_path{itrial} = fullfile(curr, 'videos','crowd_videos_3000ms',video_name);
+        T.movie_path{itrial} = fullfile(curr, 'videos','crowd_videos_500ms',video_name);
     end
 end
 
@@ -105,7 +106,7 @@ movie = zeros(n_trials, 1);
 
 %% open window
 commandwindow;
-%     HideCursor;
+HideCursor;
 Screen('Preference','SkipSyncTests',1);
 
 % Uncomment for debugging with transparent screen
@@ -119,15 +120,18 @@ screen = max(Screen('Screens'));
 [win, rect] = Screen('OpenWindow', screen, 0);
 [x0,y0] = RectCenter(rect);
 Screen('Blendfunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-dispSize = [x0-500 y0-500 x0+500 y0+500];
+dispSize = [x0-half_dim y0-half_dim x0+half_dim y0+half_dim];
 
 priorityLevel=MaxPriority(win);
 Priority(priorityLevel);
 
 % Photodiode variables
-photodiode_square = [95 y0-12 119 y0+12];
-black = BlackIndex(window);
-white = WhiteIndex(window);
+photodiode_half_size = 10;
+photodiode_xcenter = x0 - half_dim - 20; 
+photodiode_ycenter = y0 - half_dim - 20;
+photodiode_square = [photodiode_xcenter-photodiode_half_size photodiode_ycenter-photodiode_half_size photodiode_xcenter+photodiode_half_size photodiode_ycenter+photodiode_half_size];
+black = BlackIndex(win);
+white = WhiteIndex(win);
 
 %% Init eyelink
 
@@ -217,7 +221,7 @@ while (GetSecs-start<start_wait_time)
     end
 end
 
-if send_trig, io64(ioObj,address,0); end %set trigger to 0
+if send_trigger; io64(ioObj,address,0); end %set trigger to 0
 for itrial = 1:n_trials
     still_loading = 1;
     response = 0;
@@ -246,8 +250,8 @@ for itrial = 1:n_trials
         Screen('DrawTexture', win, tex, [], dispSize);
         Screen('FillRect', win, black, photodiode_square); % to time it on the photodiode
         %%%% BEGIN SACRED TIMING SENSITIVE SECTION%%%%
-        [frame_stamps(idx),~,~,~] = Screen('Flip',win); % Odd sequencing, but want 'ScreenFlip' right after DAQ on
-        if idx==1 && send_trig
+        [frame_stamps(frame_counter),~,~,~] = Screen('Flip',win); % Odd sequencing, but want 'ScreenFlip' right after DAQ on
+        if frame_counter==1 && send_trigger
             io64(ioObj,address,1);  % DAQ On
             WaitSecs(0.005);        % Wait 5 ms
         end
@@ -258,14 +262,14 @@ for itrial = 1:n_trials
                 response = 1;
                 T.response(itrial) = 1;
                 
-                if send_trig, io64(ioObj,address,3); WaitSecs(0.005); end %send trigger for response
+                if send_trigger; io64(ioObj,address,3); WaitSecs(0.005); end %send trigger for response
             end
         end
         frame_counter = frame_counter + 1;
     end
     Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
     real_trial_end = Screen('Flip', win);
-    if send_trig
+    if send_trigger
         io64(ioObj,address,2);  % DAQ On
         WaitSecs(0.005);        % Wait 5 ms
     end
@@ -292,7 +296,7 @@ for itrial = 1:n_trials
                 response = 1;
                 T.response(itrial) = 1;
                 
-                if send_trig, io64(ioObj,address,3); WaitSecs(0.005); end %send trigger for response
+                if send_trigger; io64(ioObj,address,3); WaitSecs(0.005); end %send trigger for response
                 
             end
         end

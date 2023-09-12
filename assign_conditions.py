@@ -4,7 +4,6 @@ import time
 import argparse
 import numpy as np
 from pathlib import Path
-import csv
 import pandas as pd
 from glob import glob
 
@@ -38,7 +37,7 @@ def add_filler_trials(n=5):
     crowd_videos = np.array(glob(os.path.join(os.getcwd(), 'videos', 
 'crowd_videos_500ms', '*.mp4')))
     movie_path = np.random.choice(crowd_videos, size=n, replace=False)
-    video_name = [vid.split('/')[-1] for vid in movie_path]
+    video_name = [Path(vid).stem + '.mp4' for vid in movie_path]
     return pd.DataFrame({'video_name': video_name, 'condition': [0 for i in range(n)]})
 
 
