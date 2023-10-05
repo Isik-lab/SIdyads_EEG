@@ -180,12 +180,11 @@ end
 %% Init EEG
 %triggers: 1 = movie start; 2 = movie end; 3 = response
 if send_trigger
-    %    create an instance of the io64 object
-    ioObj = io64; %#ok<*UNRCH>
-    %   initialize the interface to the inpoutx64 system driver
-    status = io64(ioObj); % if status = 0, you are now ready to write and read to a hardware port
-    %  EEG port address
-    address = hex2dec('4FB8');%standard LPT1 output port address
+    SerialPortObj=serial('COM3', 'TimeOut', 1); % This is specific to the computer. you can check the port number in Device Management > Parallel Ports
+    SerialPortObj.BytesAvailableFcnMode='byte';
+    SerialPortObj.BytesAvailableFcnCount=1;
+    SerialPortObj.BytesAvailableFcn=@ReadCallback;
+    fopen(SerialPortObj);
 end
 
 %% Task instructions and start with the trigger
@@ -221,7 +220,11 @@ while (GetSecs-start<start_wait_time)
     end
 end
 
-if send_trigger; io64(ioObj,address,0); end %set trigger to 0
+if send_trigger
+    fwrite(SerialPortObj, 0,'sync');
+    WaitSecs(0.005);
+end %set trigger to 0
+
 for itrial = 1:n_trials
     still_loading = 1;
     response = 0;
@@ -252,9 +255,9 @@ for itrial = 1:n_trials
         %%%% BEGIN SACRED TIMING SENSITIVE SECTION%%%%
         [frame_stamps(frame_counter),~,~,~] = Screen('Flip',win); % Odd sequencing, but want 'ScreenFlip' right after DAQ on
         if frame_counter==1 && send_trigger
-            io64(ioObj,address,1);  % DAQ On
-            WaitSecs(0.005);        % Wait 5 ms
-        end
+            fwrite(SerialPortObj, 1,'sync');
+            WaitSecs(0.005);
+        end %send trigger for video start
         Screen('Close', tex);
         
         if ~response
@@ -262,7 +265,10 @@ for itrial = 1:n_trials
                 response = 1;
                 T.response(itrial) = 1;
                 
-                if send_trigger; io64(ioObj,address,3); WaitSecs(0.005); end %send trigger for response
+                if send_trigger
+                    fwrite(SerialPortObj, 3,'sync');
+                    WaitSecs(0.005);
+                end %send trigger for response
             end
         end
         frame_counter = frame_counter + 1;
@@ -270,9 +276,9 @@ for itrial = 1:n_trials
     Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
     real_trial_end = Screen('Flip', win);
     if send_trigger
-        io64(ioObj,address,2);  % DAQ On
-        WaitSecs(0.005);        % Wait 5 ms
-    end
+        fwrite(SerialPortObj, 2,'sync');
+        WaitSecs(0.005);
+    end %send trigger for video end
     %%%% END SACRED TIMING SENSITIVE SECTION%%%%
     
     %Get end time and close movie
@@ -296,7 +302,10 @@ for itrial = 1:n_trials
                 response = 1;
                 T.response(itrial) = 1;
                 
-                if send_trigger; io64(ioObj,address,3); WaitSecs(0.005); end %send trigger for response
+               if send_trigger
+                    fwrite(SerialPortObj, 3,'sync');
+                    WaitSecs(0.005);
+                end %send trigger for response
                 
             end
         end
@@ -367,3 +376,22 @@ fprintf('\n\n\n%s\n',WrapString(s));
 s=sprintf('Experiment duration %0.1f s', actual_duration);
 fprintf('\n\n\n%s\n',WrapString(s));
 
+if send_trigger
+    % Reset the port (i.e. bit 0 to 7) to its resting state 255
+    fwrite(SerialPortObj, 255,'sync');
+    WaitSecs(0.005);
+    % Then disconnect/close the serial port object from the serial port
+    fclose(SerialPortObj);
+    % Remove the serial port object from memory
+    delete(SerialPortObj);
+    % Remove the serial port object from the MATLAB® workspace
+    clear SerialPortObj;
+end 
+
+% Read callback function
+    function ReadCallback(src, event)
+        %disp(event.Type);
+        if(src.BytesAvailable > 0)
+            disp(fread(src, src.BytesAvailable));
+        end
+    end
