@@ -110,8 +110,8 @@ HideCursor;
 Screen('Preference','SkipSyncTests',1);
 
 % Uncomment for debugging with transparent screen
-% AssertOpenGL;
-% PsychDebugWindowConfiguration;
+AssertOpenGL;
+PsychDebugWindowConfiguration;
 
 %Suppress frogs
 Screen('Preference','VisualDebugLevel', 0);
@@ -188,7 +188,7 @@ if send_trigger
 end
 
 %% Task instructions and start with the trigger
-instructions='Watch the people in each video. If there are more than 2 people, press any button. Press any button to begin.';
+instructions='Watch the people in each video.\nIf there are more than 2 people, press any button.\nPress any button to begin.';
 DrawFormattedText2(instructions,'win',win,'sx','center','sy','center','xalign','center','yalign', 'center','baseColor',[255, 255, 255]);
 Screen('Flip', win);
 
