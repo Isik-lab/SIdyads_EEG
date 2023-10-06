@@ -14,7 +14,7 @@ if nargin < 1
     subjName = 77;
     run_number = 1;
     with_Eyelink = 0;
-    send_trigger = 0; 
+    send_trigger = 1;
     debug = 1;
 end
 
@@ -127,8 +127,8 @@ Priority(priorityLevel);
 
 % Photodiode variables
 photodiode_half_size = 10;
-photodiode_xcenter = x0 - half_dim - 20; 
-photodiode_ycenter = y0 - half_dim - 20;
+photodiode_xcenter = x0 + half_dim + 55;
+photodiode_ycenter = y0 + half_dim + 55;
 photodiode_square = [photodiode_xcenter-photodiode_half_size photodiode_ycenter-photodiode_half_size photodiode_xcenter+photodiode_half_size photodiode_ycenter+photodiode_half_size];
 black = BlackIndex(win);
 white = WhiteIndex(win);
@@ -139,31 +139,31 @@ if with_Eyelink
     if EyelinkInit()~= 1
         return;
     end
-    
+
     [~,vs] = Eyelink('GetTrackerVersion');
     fprintf('Running experiment on a ''%s'' tracker.\n', vs );
-    
+
     edfFile=['run', sprintf('%03d', run_number)]; %fullfile(edfout,['run',  sprintf('%03d', run_number)]);
     el=EyelinkInitDefaults(win);%window is the window you have opened with screen function
     % open file to record data to
     Eyelink('Openfile', edfFile);
-    
+
     % this line will perform the calibration
     Eyelink('command', 'calibration_type = HV9');
     EyelinkDoTrackerSetup(el);
-    
+
     % set up configurations.
     Eyelink('command', 'recording_parse_type = GAZE');
     Eyelink('command', 'saccade_acceleration_threshold = 8000');
     Eyelink('command', 'saccade_velocity_threshold = 30');
     Eyelink('command', 'saccade_motion_threshold = 0.15');
     Eyelink('command', 'saccade_pursuit_fixup = 60');
-    
+
     %	set EDF file contents
     Eyelink('command', 'file_event_filter = LEFT,RIGHT,FIXATION,SACCADE,BLINK,MESSAGE,BUTTON');
     Eyelink('command', 'file_sample_data  = LEFT,RIGHT,GAZE,GAZERES,HREF,AREA');
     Eyelink('command', 'file_event_data  = GAZE,GAZERES,AREA,VELOCITY,HREF');
-    
+
     %	set link data (used for gaze cursor)
     Eyelink('command', 'link_event_filter = LEFT,RIGHT,FIXATION,SACCADE,BLINK,MESSAGE,BUTTON');
     Eyelink('command', 'link_sample_data  = LEFT,RIGHT,GAZE,GAZERES,HREF,AREA');
@@ -171,7 +171,7 @@ if with_Eyelink
     Eyelink('StartRecording');
     % record a few samples before we actually start displaying
     WaitSecs(0.1);
-    
+
     %     eyeLinkCheck(win,x0,y0); %Additional Eyelink Validation that saves the
     %position at the beginning of the block data to help diagnose systematic
     %errors.
@@ -198,7 +198,7 @@ while 1
     if KbCheck
         break;
     end
-    
+
     if still_loading
         movie(1) = Screen('OpenMovie', win, T.movie_path{1}, async, preloadsecs);
         if movie(1) > 0; still_loading = 0; end
@@ -235,20 +235,20 @@ for itrial = 1:n_trials
     trial_end = trial_start + stimulus_length;
     iti_end = trial_end + iti_length;
     T.onset_time(itrial) = trial_start - start;
-    
+
     if with_Eyelink %inside the trial function
         % these messages will be recorded in the output file determining the begining of the trial
         Eyelink('Message', ['TRIALID ', num2str(itrial)]);
         Eyelink('Message', ['TRIAL_VAR_DATA ', T.video_name{itrial}]);
         Eyelink('Message', 'STIMULUS_START');
     end
-    
+
     frame_counter = 1;
     while 1
         if frame_counter == (n_frames+1) || GetSecs > (trial_end-(1/60))
             break;
         end
-        
+
         tex = Screen('GetMovieImage', win, movie(itrial), blocking);
         Screen('DrawTexture', win, tex, [], dispSize);
         Screen('FillRect', win, black, photodiode_square); % to time it on the photodiode
@@ -259,12 +259,12 @@ for itrial = 1:n_trials
             WaitSecs(0.005);
         end %send trigger for video start
         Screen('Close', tex);
-        
+
         if ~response
             if KbCheck
                 response = 1;
                 T.response(itrial) = 1;
-                
+
                 if send_trigger
                     fwrite(SerialPortObj, 3,'sync');
                     WaitSecs(0.005);
@@ -280,12 +280,12 @@ for itrial = 1:n_trials
         WaitSecs(0.005);
     end %send trigger for video end
     %%%% END SACRED TIMING SENSITIVE SECTION%%%%
-    
+
     %Get end time and close movie
     T.offset_time(itrial) = real_trial_end - start;
     T.duration(itrial) = real_trial_end - trial_start;
     Screen('CloseMovie', movie(itrial));
-    
+
     message_sent = 0;
     while (GetSecs<iti_end)
         if with_Eyelink && ~message_sent
@@ -296,21 +296,21 @@ for itrial = 1:n_trials
             movie(itrial+1) = Screen('OpenMovie', win, T.movie_path{itrial+1}, async, preloadsecs);
             if movie(itrial+1) > 0; still_loading = 0; end
         end
-        
+
         if ~response
             if KbCheck
                 response = 1;
                 T.response(itrial) = 1;
-                
-               if send_trigger
+
+                if send_trigger
                     fwrite(SerialPortObj, 3,'sync');
                     WaitSecs(0.005);
                 end %send trigger for response
-                
+
             end
         end
     end
-    
+
     if itrial ~= height(T)
         if T.block(itrial) ~= T.block(itrial + 1)
             DrawFormattedText2('Take a short break./n Press any button when ready to continue.','win',win,'sx','center','sy','center','xalign','center','yalign', 'center','baseColor',[255, 255, 255]);
@@ -324,7 +324,7 @@ for itrial = 1:n_trials
         end
     else %itrial == height(T)
         instructions = 'You may sit back.\nLonger break is beginning.\nThis window will close.\n';
-        
+
         DrawFormattedText2(instructions,'win',win,'sx','center','sy','center','xalign','center','yalign', 'center','baseColor',[255, 255, 255]);
         Screen('Flip', win);
         fprintf('End of run');
@@ -357,7 +357,7 @@ if with_Eyelink
         fprintf('Problem receiving data file ''%s''\n', edfFile );
     end
     Eyelink('ShutDown');
-    
+
     try
         movefile([edfFile,'.edf'], fullfile(edfout, [edfFile, '_', curr_date, '.edf']));
         move_error = 'No';
@@ -386,12 +386,13 @@ if send_trigger
     delete(SerialPortObj);
     % Remove the serial port object from the MATLAB® workspace
     clear SerialPortObj;
-end 
+end
+end
 
 % Read callback function
-    function ReadCallback(src, event)
-        %disp(event.Type);
-        if(src.BytesAvailable > 0)
-            disp(fread(src, src.BytesAvailable));
-        end
-    end
+function ReadCallback(src, event)
+%disp(event.Type);
+if(src.BytesAvailable > 0)
+    disp(fread(src, src.BytesAvailable));
+end
+end
