@@ -11,11 +11,11 @@ function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger)
 
 debug = 0; % Set to zero unless no argumets are passed, then enter debug mode
 if nargin < 1
-    subjName = 77;
+    subjName = 1;
     run_number = 1;
     with_Eyelink = 0;
     send_trigger = 1;
-    debug = 1;
+    debug = 0;
 end
 
 % make output directories
@@ -110,8 +110,8 @@ HideCursor;
 Screen('Preference','SkipSyncTests',1);
 
 % Uncomment for debugging with transparent screen
-AssertOpenGL;
-PsychDebugWindowConfiguration;
+% AssertOpenGL;
+% PsychDebugWindowConfiguration;
 
 %Suppress frogs
 Screen('Preference','VisualDebugLevel', 0);
@@ -313,7 +313,7 @@ for itrial = 1:n_trials
 
     if itrial ~= height(T)
         if T.block(itrial) ~= T.block(itrial + 1)
-            DrawFormattedText2('Take a short break./n Press any button when ready to continue.','win',win,'sx','center','sy','center','xalign','center','yalign', 'center','baseColor',[255, 255, 255]);
+            DrawFormattedText2('Take a short break.\nPress any button when ready to continue.','win',win,'sx','center','sy','center','xalign','center','yalign', 'center','baseColor',[255, 255, 255]);
             Screen('Flip', win);
             fprintf('Break in experiment');
             while 1
