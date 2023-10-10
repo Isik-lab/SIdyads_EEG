@@ -46,6 +46,15 @@ def save_data(df, filename):
     df.to_csv(filename, index=False, header=True)
 
 
+def sample_normal_within_range(mu, sigma, low, high, size, precision=1):
+    samples = []
+    while len(samples) < size:
+        s = np.round(np.random.normal(mu, sigma), precision)
+        if low <= s <= high:
+            samples.append(s)
+    return np.array(samples)
+
+
 def mk_condition_files(SID=77, n_runs=10, n_blocks=5):
     toppath = os.path.join('data', f'subj{str(SID).zfill(3)}')
     mk_output_paths(SID, toppath)
@@ -57,6 +66,7 @@ def mk_condition_files(SID=77, n_runs=10, n_blocks=5):
             block_df = mk_block(videos[j], j+1)
             run_df.append(block_df)
         run_df = pd.concat(run_df)
+        run_df['iti'] = sample_normal_within_range(1.25, 0.1, 1, 1.5, len(run_df))
         outname = os.path.join(toppath, 'runfiles', f'run{str(i+1).zfill(3)}.csv')
         save_data(run_df, outname)
     print('\nRuns assigned. Closing...')

@@ -11,11 +11,11 @@ function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger)
 
 debug = 0; % Set to zero unless no argumets are passed, then enter debug mode
 if nargin < 1
-    subjName = 1;
+    subjName = 77;
     run_number = 1;
     with_Eyelink = 0;
-    send_trigger = 1;
-    debug = 0;
+    send_trigger = 0;
+    debug = 1;
 end
 
 % make output directories
@@ -68,10 +68,8 @@ rate = 1;
 sound = 0;
 blocking = 1;
 stimulus_length = 0.5;
-TR = .75;
-iti_length = TR;
-ending_wait_time = 1;
-start_wait_time = TR;
+ending_wait_time = 2;
+start_wait_time = 2;
 n_frames = 15;
 half_dim = 250;
 if debug
@@ -180,7 +178,8 @@ end
 %% Init EEG
 %triggers: 1 = movie start; 2 = movie end; 3 = response
 if send_trigger
-    SerialPortObj=serial('COM3', 'TimeOut', 1); % This is specific to the computer. you can check the port number in Device Management > Parallel Ports
+    % The port name is specific to the computer and port. You can check the port number in Device Management > Parallel Ports
+    SerialPortObj=serial('COM3', 'TimeOut', 1); 
     SerialPortObj.BytesAvailableFcnMode='byte';
     SerialPortObj.BytesAvailableFcnCount=1;
     SerialPortObj.BytesAvailableFcn=@ReadCallback;
@@ -233,7 +232,7 @@ for itrial = 1:n_trials
     Screen('PlayMovie', movie(itrial), rate, 1, sound);
     frame_stamps = zeros(n_frames,1);
     trial_end = trial_start + stimulus_length;
-    iti_end = trial_end + iti_length;
+    iti_end = trial_end + T.iti(itrial); %jitters the iti length
     T.onset_time(itrial) = trial_start - start;
 
     if with_Eyelink %inside the trial function
@@ -245,7 +244,7 @@ for itrial = 1:n_trials
 
     frame_counter = 1;
     while 1
-        if frame_counter == (n_frames+1) || GetSecs > (trial_end-(1/60))
+        if frame_counter == (n_frames+1) || GetSecs > trial_end
             break;
         end
 
