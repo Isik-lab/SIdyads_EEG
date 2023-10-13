@@ -55,7 +55,7 @@ def sample_normal_within_range(mu, sigma, low, high, size, precision=1):
     return np.array(samples)
 
 
-def mk_condition_files(SID=77, n_runs=10, n_blocks=5):
+def mk_condition_files(SID=77, n_runs=8, n_blocks=5):
     toppath = os.path.join('data', f'subj{str(SID).zfill(3)}')
     mk_output_paths(SID, toppath)
     print('\nWriting run files...')
@@ -75,7 +75,7 @@ def mk_condition_files(SID=77, n_runs=10, n_blocks=5):
 def getArgs():
     parser = argparse.ArgumentParser()
     parser.add_argument('--sid', '-s', type=int, default=77)
-    parser.add_argument('--n_runs', type=int, default=10)
+    parser.add_argument('--n_runs', type=int, default=8)
     parser.add_argument('--n_blocks', type=int, default=5)
     args = parser.parse_args()
     return args
