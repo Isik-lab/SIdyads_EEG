@@ -78,8 +78,8 @@ else
     n_trials = height(T);
 end
 
-expected_duration = (height(T) * (stimulus_length + iti_length)) + ending_wait_time + start_wait_time;
-fprintf('Expected duration: %g min \n\n', expected_duration / 60);
+% expected_duration = (height(T) * (stimulus_length + iti_length)) + ending_wait_time + start_wait_time;
+% fprintf('Expected duration: %g min \n\n', expected_duration / 60);
 sca;
 
 
