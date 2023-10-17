@@ -229,6 +229,7 @@ end
 % experiment start time
 % try
 start = GetSecs();
+Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
 Screen('DrawLines', win, fixation_coordinates,...
     fixation_line_width, white, [x0 y0], 2);
 Screen('Flip', win);
