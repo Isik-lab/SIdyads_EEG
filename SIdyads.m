@@ -11,11 +11,11 @@ function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger)
 
 debug = 0; % Set to zero unless no argumets are passed, then enter debug mode
 if nargin < 1
-    subjName = 77;
+    subjName = 97;
     run_number = 1;
     with_Eyelink = 1;
     send_trigger = 1;
-    debug = 1;
+    debug_mode = 1;
 end
 
 % make output directories
@@ -72,7 +72,7 @@ ending_wait_time = 2;
 start_wait_time = 2;
 n_frames = 15;
 half_dim = 250;
-if debug
+if debug_mode
     n_trials = 25;
 else
     n_trials = height(T);
@@ -132,11 +132,11 @@ black = BlackIndex(win);
 white = WhiteIndex(win);
 
 % Here we set the size of the arms of our fixation cross
-fixCrossDimPix = 40;
+fixCrossDimPix = 15;
 fix_xcoords = [-fixCrossDimPix fixCrossDimPix 0 0];
 fix_ycoords = [0 0 -fixCrossDimPix fixCrossDimPix];
 fixation_coordinates = [fix_xcoords; fix_ycoords];
-fixation_line_width = 4;
+fixation_line_width = 3;
 
 %% Init eyelink
 
