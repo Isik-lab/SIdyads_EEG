@@ -13,8 +13,8 @@ debug = 0; % Set to zero unless no argumets are passed, then enter debug mode
 if nargin < 1
     subjName = 77;
     run_number = 1;
-    with_Eyelink = 0;
-    send_trigger = 0;
+    with_Eyelink = 1;
+    send_trigger = 1;
     debug = 1;
 end
 
