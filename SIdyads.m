@@ -11,10 +11,10 @@ function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger)
 
 debug = 0; % Set to zero unless no argumets are passed, then enter debug mode
 if nargin < 1
-    subjName = 97;
-    run_number = 1;
+    subjName = 107;
+    run_number = 3;
     with_Eyelink = 1;
-    send_trigger = 1;
+    send_trigger = 0;
     debug_mode = 1;
 end
 
@@ -132,7 +132,7 @@ black = BlackIndex(win);
 white = WhiteIndex(win);
 
 % Here we set the size of the arms of our fixation cross
-fixCrossDimPix = 15;
+fixCrossDimPix = 20;
 fix_xcoords = [-fixCrossDimPix fixCrossDimPix 0 0];
 fix_ycoords = [0 0 -fixCrossDimPix fixCrossDimPix];
 fixation_coordinates = [fix_xcoords; fix_ycoords];
@@ -161,8 +161,8 @@ if with_Eyelink
     end
 
     %Reduce FOV
-    Eyelink('command','calibration_area_proportion = 0.5 0.5');
-    Eyelink('command','validation_area_proportion = 0.48 0.48');
+    Eyelink('command','calibration_area_proportion = 0.25 0.25');
+    Eyelink('command','validation_area_proportion = 0.25 0.25');
 
     % open file to record data to
     Eyelink('Openfile', edfFile);
