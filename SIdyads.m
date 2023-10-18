@@ -1,4 +1,4 @@
-function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger)
+function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger, debug_mode)
 % Presents the social interaction localizer task
 % Inputs:
 % subjName as an integer used when saving and loading the sequences
@@ -9,7 +9,6 @@ function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger)
 % runNum is an integer used when saving and loading the sequences
 % Written by Emalie McMahon Sept 6, 2023
 
-debug = 0; % Set to zero unless no argumets are passed, then enter debug mode
 if nargin < 1
     subjName = 107;
     run_number = 3;
@@ -73,7 +72,7 @@ start_wait_time = 2;
 n_frames = 15;
 half_dim = 250;
 if debug_mode
-    n_trials = 25;
+    n_trials = 15;
 else
     n_trials = height(T);
 end
@@ -213,16 +212,20 @@ Screen('Flip', win);
 
 %% WAIT FOR TRIGGER TO START
 still_loading = 1;
-while 1
-    if KbCheck
-        break;
+if debug_mode
+    WaitSecs(0.5)
+else
+    while 1
+        if KbCheck
+            break;
+        end
+        
+        if still_loading
+            movie(1) = Screen('OpenMovie', win, T.movie_path{1}, async, preloadsecs);
+            if movie(1) > 0; still_loading = 0; end
+        end
     end
-
-    if still_loading
-        movie(1) = Screen('OpenMovie', win, T.movie_path{1}, async, preloadsecs);
-        if movie(1) > 0; still_loading = 0; end
-    end
-end
+end 
 
 
 %% Experiment loop

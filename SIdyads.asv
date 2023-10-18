@@ -1,4 +1,4 @@
-function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger)
+function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger, debug_mode)
 % Presents the social interaction localizer task
 % Inputs:
 % subjName as an integer used when saving and loading the sequences
@@ -9,13 +9,12 @@ function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger)
 % runNum is an integer used when saving and loading the sequences
 % Written by Emalie McMahon Sept 6, 2023
 
-debug = 0; % Set to zero unless no argumets are passed, then enter debug mode
 if nargin < 1
-    subjName = 77;
-    run_number = 1;
+    subjName = 107;
+    run_number = 3;
     with_Eyelink = 1;
-    send_trigger = 1;
-    debug = 1;
+    send_trigger = 0;
+    debug_mode = 1;
 end
 
 % make output directories
@@ -72,7 +71,7 @@ ending_wait_time = 2;
 start_wait_time = 2;
 n_frames = 15;
 half_dim = 250;
-if debug
+if debug_mode
     n_trials = 25;
 else
     n_trials = height(T);
@@ -132,11 +131,11 @@ black = BlackIndex(win);
 white = WhiteIndex(win);
 
 % Here we set the size of the arms of our fixation cross
-fixCrossDimPix = 40;
+fixCrossDimPix = 20;
 fix_xcoords = [-fixCrossDimPix fixCrossDimPix 0 0];
 fix_ycoords = [0 0 -fixCrossDimPix fixCrossDimPix];
 fixation_coordinates = [fix_xcoords; fix_ycoords];
-fixation_line_width = 4;
+fixation_line_width = 3;
 
 %% Init eyelink
 
@@ -161,8 +160,8 @@ if with_Eyelink
     end
 
     %Reduce FOV
-    Eyelink('command','calibration_area_proportion = 0.5 0.5');
-    Eyelink('command','validation_area_proportion = 0.48 0.48');
+    Eyelink('command','calibration_area_proportion = 0.25 0.25');
+    Eyelink('command','validation_area_proportion = 0.25 0.25');
 
     % open file to record data to
     Eyelink('Openfile', edfFile);
@@ -199,7 +198,7 @@ end
 %triggers: 1 = movie start; 2 = movie end; 3 = response
 if send_trigger
     % The port name is specific to the computer and port. You can check the port number in Device Management > Parallel Ports
-    SerialPortObj=serial('COM3', 'TimeOut', 1); 
+    SerialPortObj=serial('COM3', 'TimeOut', 1);
     SerialPortObj.BytesAvailableFcnMode='byte';
     SerialPortObj.BytesAvailableFcnCount=1;
     SerialPortObj.BytesAvailableFcn=@ReadCallback;
@@ -213,6 +212,8 @@ Screen('Flip', win);
 
 %% WAIT FOR TRIGGER TO START
 still_loading = 1;
+if debug_mode
+    WaitSecs(0
 while 1
     if KbCheck
         break;
@@ -229,8 +230,9 @@ end
 % experiment start time
 % try
 start = GetSecs();
-Screen('DrawLines', window, fixation_coordinates,...
-    fixation_line_width, white, [xCenter yCenter], 2);
+Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
+Screen('DrawLines', win, fixation_coordinates,...
+    fixation_line_width, white, [x0 y0], 2);
 Screen('Flip', win);
 
 % wait 2 TRs to start
@@ -295,6 +297,8 @@ for itrial = 1:n_trials
         frame_counter = frame_counter + 1;
     end
     Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
+    Screen('DrawLines', win, fixation_coordinates,...
+        fixation_line_width, white, [x0 y0], 2);
     real_trial_end = Screen('Flip', win);
     if send_trigger
         fwrite(SerialPortObj, 2,'sync');
