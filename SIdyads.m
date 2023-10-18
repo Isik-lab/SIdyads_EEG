@@ -10,9 +10,9 @@ function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger, 
 % Written by Emalie McMahon Sept 6, 2023
 
 if nargin < 1
-    subjName = 107;
-    run_number = 3;
-    with_Eyelink = 1;
+    subjName = 77;
+    run_number = 2;
+    with_Eyelink = 0;
     send_trigger = 0;
     debug_mode = 1;
 end
@@ -213,7 +213,7 @@ Screen('Flip', win);
 %% WAIT FOR TRIGGER TO START
 still_loading = 1;
 if debug_mode
-    WaitSecs(0.5)
+    WaitSecs(2)
 else
     while 1
         if KbCheck
