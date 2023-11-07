@@ -88,7 +88,7 @@ def getArgs():
     parser.add_argument('--sid', '-s', type=int, default=77)
     parser.add_argument('--n_runs', type=int, default=8)
     parser.add_argument('--n_blocks', type=int, default=5)
-    parser.add_argument('--n_repeats', type=int, default=8)
+    parser.add_argument('--n_repeats', type=int, default=1)
     parser.add_argument('--condition', type=str, default='both')
     args = parser.parse_args()
     return args

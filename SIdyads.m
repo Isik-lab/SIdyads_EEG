@@ -210,7 +210,7 @@ movie = zeros(n_trials, 1);
     %% WAIT FOR TRIGGER TO START
     still_loading = 1;
     if debug_mode
-        WaitSecs(2)
+        WaitSecs(5)
     else
         while 1
             if KbCheck
