@@ -345,12 +345,9 @@ movie = zeros(n_trials, 1);
                         break;
                     end
                 end
-                
-                % Add a delay after the break before the next video starts
                 Screen('DrawLines', win, fixation_coordinates,...
                     fixation_line_width, white, [x0 y0], 2);
                 Screen('Flip', win);
-                WaitSecs(3);
             end
         else %itrial == height(T)
             instructions = 'Longer break is beginning.\nThis window will close.\n';
