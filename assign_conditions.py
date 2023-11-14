@@ -97,7 +97,7 @@ def getArgs():
     parser.add_argument('--n_blocks', type=int, default=8)
     parser.add_argument('--test_repeats', type=int, default=4)
     parser.add_argument('--train_repeats', type=int, default=1)
-    parser.add_argument('--top_path', type=str, default='/Users/emcmaho7/Dropbox/projects/SI_EEG/SIdyads_EEG')
+    parser.add_argument('--top_path', type=str, default=None)
     args = parser.parse_args()
     return args
 
