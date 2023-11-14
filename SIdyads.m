@@ -353,7 +353,7 @@ movie = zeros(n_trials, 1);
                 WaitSecs(3);
             end
         else %itrial == height(T)
-            instructions = 'Longer break is beginning.\nThis window will close.\n';
+            instructions = 'This section has finished.\nThis window will now close.\n';
 
             DrawFormattedText2(instructions,'win',win,'sx','center','sy','center','xalign','center','yalign', 'center','baseColor',[255, 255, 255]);
             Screen('Flip', win);
