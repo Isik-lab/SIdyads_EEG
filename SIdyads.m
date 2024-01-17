@@ -121,8 +121,8 @@ movie = zeros(n_trials, 1);
 
     % Photodiode variables
     photodiode_half_size = 10;
-    photodiode_xcenter = x0 + half_dim + 55;
-    photodiode_ycenter = y0 + half_dim + 55;
+    photodiode_xcenter = x0;
+    photodiode_ycenter = y0 + half_dim + 100;
     photodiode_square = [photodiode_xcenter-photodiode_half_size photodiode_ycenter-photodiode_half_size photodiode_xcenter+photodiode_half_size photodiode_ycenter+photodiode_half_size];
     black = BlackIndex(win);
     white = WhiteIndex(win);
