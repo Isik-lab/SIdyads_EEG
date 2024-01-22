@@ -11,15 +11,15 @@ function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger, 
 
 if nargin < 1
     subjName = 77;
-    run_number = 2;
-    with_Eyelink = 0;
-    send_trigger = 0;
-    debug_mode = 1;
+    run_number = 1;
+    with_Eyelink = 1;
+    send_trigger = 1;
+    debug_mode = 0;
 end
 
 % make output directories
 curr = pwd;
-topout = fullfile(curr, 'data', ['subj',sprintf('%03d', subjName)]);
+topout = fullfile(curr, 'data', ['sub-',sprintf('%02d', subjName)]);
 matout = fullfile(topout, 'matfiles');
 timingout = fullfile(topout, 'timingfiles');
 runfiles = fullfile(topout,'runfiles');

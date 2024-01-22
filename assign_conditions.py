@@ -63,7 +63,7 @@ def mk_condition_files(SID=77, n_runs=6, n_blocks=8,
         top_path = os.getcwd()
     crowd_videos = np.array(glob(os.path.join(top_path, 'videos',
                                               'crowd_videos_500ms', '*.mp4')))
-    out_path = os.path.join(top_path, 'data', f'subj{str(SID).zfill(3)}')
+    out_path = os.path.join(top_path, 'data', f'sub-{str(SID).zfill(2)}')
     print(out_path)
     mk_output_paths(out_path)
 
