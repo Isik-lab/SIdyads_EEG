@@ -12,8 +12,8 @@ function run_number = SIdyads(subjName, run_number, with_Eyelink, send_trigger, 
 if nargin < 1
     subjName = 77;
     run_number = 1;
-    with_Eyelink = 1;
-    send_trigger = 1;
+    with_Eyelink = 0;
+    send_trigger = 0;
     debug_mode = 0;
 end
 
@@ -205,6 +205,7 @@ movie = zeros(n_trials, 1);
     %% Task instructions and start with the trigger
     instructions='Watch the people in each video.\nIf there is a crowd of people, press any button.\nPress any button to begin.';
     DrawFormattedText2(instructions,'win',win,'sx','center','sy','center','xalign','center','yalign', 'center','baseColor',[255, 255, 255]);
+    Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
     Screen('Flip', win);
 
     %% WAIT FOR TRIGGER TO START
@@ -295,9 +296,9 @@ movie = zeros(n_trials, 1);
             end
             frame_counter = frame_counter + 1;
         end
-        Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
         Screen('DrawLines', win, fixation_coordinates,...
             fixation_line_width, white, [x0 y0], 2);
+        Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
         real_trial_end = Screen('Flip', win);
         if send_trigger
             fwrite(SerialPortObj, 2,'sync');
@@ -337,7 +338,9 @@ movie = zeros(n_trials, 1);
 
         if itrial ~= height(T)
             if T.block(itrial) ~= T.block(itrial + 1)
-                DrawFormattedText2('Take a short break.\nPress any button when ready to continue.','win',win,'sx','center','sy','center','xalign','center','yalign', 'center','baseColor',[255, 255, 255]);
+                break_text = 'Take a short break.\nPress any button when ready to continue.'; 
+                DrawFormattedText2(break_text,'win',win,'sx','center','sy','center','xalign','center','yalign', 'center','baseColor',[255, 255, 255]);
+                Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
                 Screen('Flip', win);
                 fprintf('Break in experiment');
                 while 1
@@ -349,6 +352,7 @@ movie = zeros(n_trials, 1);
                 % Add a delay after the break before the next video starts
                 Screen('DrawLines', win, fixation_coordinates,...
                     fixation_line_width, white, [x0 y0], 2);
+                Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
                 Screen('Flip', win);
                 WaitSecs(3);
             end
@@ -356,6 +360,7 @@ movie = zeros(n_trials, 1);
             instructions = 'This section has finished.\nThis window will now close.\n';
 
             DrawFormattedText2(instructions,'win',win,'sx','center','sy','center','xalign','center','yalign', 'center','baseColor',[255, 255, 255]);
+            Screen('FillRect', win, white, photodiode_square); % to time it on the photodiode
             Screen('Flip', win);
             fprintf('End of run');
             WaitSecs(3);
